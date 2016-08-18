@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>You can't get me</title>
+<style type = "text/css">
+	body{
+		margin: 0;
+		background: #1a1e3a;
+	}
+	#scoreBoard{
+		height: 200px;
+		width: 250px;
+		margin: 50px auto 0 auto;
+		background: url('assets/images/headstone.png') no-repeat;
+		background-size: 250px 200px;
+	}
+	#container{
+		width: 100%;
+		height:400px;
+		overflow: hidden;
+		background: url('assets/images/bg1.png');
+		background-position: bottom;
+	}
+	@keyframes backgroundMove {
+		0% {left: 0px;}
+		100%{left: calc(100% - 1600px);}	
+	}
+	#container-background{
+		display: block;
+		position: absolute;
+		animation: backgroundMove 2s linear infinite;
+	}
+	
+	@keyframes ghostTremble {
+		0% {left: 300px;}
+		50% {left: 303px;}
+		100% {left: 300px;}
+	}
+	#player {
+		position: relative;
+		left: 300px;
+		top: 100px;
+		height: 280px;
+		width: 80px;
+		background-color: GhostWhite;
+		border-radius: 40px 40px 0 0;
+		animation: ghostTremble 1s linear infinite; 
+		border: 2px solid black;
+	}
+	#eye {
+		position: relative;
+		width: 20px;
+		height: 20px;
+		background-color: black;
+		border-radius: 50%;
+		left: 50px;
+		top: 40px;
+	}
+	#mouth{
+		position: relative;
+		width: 20px;
+		height: 30px;
+		background-color: black;
+		border-top-left-radius: 10%;
+		border-bottom-left-radius: 50%;
+		left: 60px;
+		top: 60px;
+	
+	}
+	.stones{
+		position: absolute;
+		left: 100%;
+		top: 200px;
+		width: 100px;
+		height: 100px;
+		background: url('assets/images/headstone.png');
+		background-size: 100%;
+		border-radius: 5%;
+	}
+</style>
+<script type = "text/javascript" src = "node_modules/jquery/dist/jquery.min.js"></script>
+<script type="text/javascript">
+
+$(document).ready(function() {
+	var ghost = $('#player');
+	
+	var score = false;
+	var countStones = 10;
+	var lives = 3;
+
+	function stoneMove() {
+		countStones--;
+		$('#countStones').html(countStones);
+		
+		$('.stones').animate({left: '-150px'}, {
+			duration: 2000,
+			speed: 'linear',
+			step: function () {
+				if (($('.stones').position().left > $('#player').position().left) &&
+					($('.stones').position().left < $('#player').position().left + 80)){
+			
+					if($('.stones').position().top > $('#player').position().top){
+						score = true;
+					}
+				}
+			},
+			complete: function() {
+				if(score) {
+					lives--;
+					$('#lives').html(lives);
+					score = false;
+				}
+				$('.stones').css({
+					left: '100%',
+					top: Math.floor(Math.random()*3)*100 + 'px'
+				})
+				
+				stoneMove();
+			}
+		});
+		
+	}
+	
+	
+	function kneeing() {
+		if (event.keyCode != 40) {
+			return;
+		}
+			$('#player').animate({height: '179px',top: '200px', width: '80px'}, 500, 'linear');
+	}
+	
+	function standUp() {
+		if (event.keyCode != 38) {
+			return;
+		}
+		$('#player').animate({height: '280px', top: '100px', width: '80px'}, 500, 'linear');
+		console.log($('.stones').position());
+	}
+	function layingDown() {
+		if (event.keyCode != 32) {
+			return;
+		}
+		$('#player').animate({height: '80px', top: '300px', width: '180px'}, 500, 'linear');
+	}
+	
+	
+	stoneMove();
+	
+	$(document).on('keydown', kneeing);
+	$(document).on('keydown', standUp);
+	$(document).on('keydown', layingDown);
+	
+})
+</script>
+</head>
+<body>
+	
+	<div id="container">
+	<img id = "container-background" src = "assets/images/bg1.png" /> 
+		<div id="player">
+			<div id ="eye"></div>
+			<div id = "mouth"></div>
+		</div>
+		<div class = "stones"></div>
+	</div>
+	<div id = "scoreBoard">
+		<p id = "lives" style = "color: white;">3</p>
+		<p id = "countStones" style = "color: white;">10</p>
+	</div>
+	
+</body>
+</html>
